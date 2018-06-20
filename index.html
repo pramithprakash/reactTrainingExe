@@ -43,6 +43,9 @@
             .category {
                 display: none;
             }
+            .new-issue {
+                float: right;
+            }
         </style>
         
 </head>
@@ -90,14 +93,15 @@
                         $('.category').show();
                         $('.form-signin').hide();
                         $.each(data, function(key,val) {
-                            repoHtml += '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">' +
+                            repoHtml += '<section class="list-group-item list-group-item-action flex-column align-items-start">' +
                                         '<div class="d-flex w-100 justify-content-between">' +
                                         '<h1 class="mb-1">' + data[key].name + '</h1>' +
                                         '<small><b>Upadted on </b>' + data[key].updated_at + '</small>' +
                                         '</div>'+
                                         '<p class="mb-1"><b>Owner: </b>' + data[key].owner.login + '</p>' +
                                         '<small><b>Open Issue: </b>' + data[key].open_issues_count + ' </small>' +
-                                        '</a>';
+                                        '<a class="new-issue" href="#">New Issue </a>' +
+                                        '</section>';
                         });
                         repoHtml += '</div>';
         
