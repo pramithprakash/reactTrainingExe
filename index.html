@@ -1,0 +1,115 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>Category Lists - Bootsnipp.com</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+        <style>
+            .container {
+                max-width: 960px;
+            }
+            .form-signin {
+                width: 100%;
+                max-width: 330px;
+                padding: 15px;
+                margin: auto;
+            }
+            .form-signin input[type="email"] {
+                margin-bottom: -1px;
+                border-bottom-right-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+            .form-control{
+                height: 50px;
+            }
+            .form-signin input[type="password"] {
+                margin-bottom: 10px;
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+            .btn-block {
+                margin-top: 1rem;
+            }
+            .category {
+                display: none;
+            }
+        </style>
+        
+</head>
+<body>  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8">
+                <!-- Default form login -->
+                <form class="form-signin">
+                    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+                    <label for="inputEmail" class="sr-only">Email address</label>
+                    <input type="text" id="inputUserName" class="form-control" placeholder="GitHub UserName" required="" autofocus="">
+                    <button class="btn btn-lg btn-primary btn-block signin" type="submit">Sign in</button>
+                    </form>
+                <!-- Default form login -->
+                <!-- Category -->
+                <div class="single category">
+                    <h3 class="side-title">Repositories of <span id="repoUser"></span></h3>
+                    <div class="list-group">
+                        
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+    <script>
+            $(".signin").click(function(event) {
+                event.preventDefault();
+
+                var username = $('#inputUserName').val();
+
+                $('#repoUser').html(username);
+
+                if (username) {
+                    $.ajax({
+                    type: 'GET',
+                    url: 'https://api.github.com/users/' + username + '/repos'
+                }).done(function(data){
+                    var repoHtml = '<div>';
+        
+                        $('.category').show();
+                        $('.form-signin').hide();
+                        $.each(data, function(key,val) {
+                            repoHtml += '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">' +
+                                        '<div class="d-flex w-100 justify-content-between">' +
+                                        '<h1 class="mb-1">' + data[key].name + '</h1>' +
+                                        '<small><b>Upadted on </b>' + data[key].updated_at + '</small>' +
+                                        '</div>'+
+                                        '<p class="mb-1"><b>Owner: </b>' + data[key].owner.login + '</p>' +
+                                        '<small><b>Open Issue: </b>' + data[key].open_issues_count + ' </small>' +
+                                        '</a>';
+                        });
+                        repoHtml += '</div>';
+        
+                        $('.list-group').append(repoHtml);
+
+                }).fail(function(){
+                    alert('Error');
+                });
+                }
+            });
+        
+        
+            
+        </script>
+</body></html>
