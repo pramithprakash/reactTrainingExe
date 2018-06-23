@@ -416,9 +416,9 @@
                 }).done(function(data){
                     $('.loading').hide();
                     callback(data, event);
-                }).fail(function(){
+                }).fail(function(data){
                     $('.loading').hide();
-                    alert('Error');
+                    alert('Error - ' + (data.responseJSON ? data.responseJSON.message : 'unknown'));
                 });
             }
         
