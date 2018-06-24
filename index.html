@@ -389,17 +389,28 @@
                 ajaxCall(url, loadIssues, event);
             }
 
+            $(document).ready(function(){
+                var username = sessionStorage.getItem('user');
+                if(username){
+                    $('#repoUser').html(username);
+                    url = 'https://api.github.com/users/' + username + '/repos';
+                    ajaxCall(url, loadRepo);
+                }
+            });
+
             $(".signin").click(function(event) {
                 event.preventDefault();
 
                 var username = $('#inputUserName').val(),
                     url;
 
+                sessionStorage.setItem('user',username);
+
                 $('#repoUser').html(username);
 
                 if (username) {
                     url = 'https://api.github.com/users/' + username + '/repos';
-                    ajaxCall(url, loadRepo)
+                    ajaxCall(url, loadRepo);
                 }
             });
 
@@ -411,7 +422,7 @@
                     url: url,
                     data : data,
                     beforeSend: function(xhr) {
-                        xhr.setRequestHeader("Authorization", "token b464b5d66fd227c9fa0d7d3e8919b9a2cc0f7bb0");
+                        xhr.setRequestHeader("Authorization", "token 84318dc6821670d7b93abe99910871a11f3e5667");
                     }
                 }).done(function(data){
                     $('.loading').hide();
