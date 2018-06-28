@@ -1,0 +1,485 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>Category Lists - Bootsnipp.com</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+        crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+
+    <style>
+        .container {
+            max-width: 960px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .container.login {
+            height: 100%;
+        }
+
+        .row {
+            width: 100%;
+        }
+
+        .container.login .form-signin {
+            display: block;
+        }
+
+        .container.login .category {
+            display: none;
+        }
+
+        .form-signin {
+            width: 100%;
+            display: none;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+
+        .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-control {
+            height: 50px;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .btn-block {
+            margin-top: 1rem;
+        }
+
+        .links {
+            padding: 10px 0 5px;
+        }
+
+        .new-issue,
+        .view-issue {
+            margin: 0 10px 0 0;
+        }
+
+        .overlay-active::after {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #eee;
+            content: '';
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: block;
+            opacity: .5;
+        }
+
+        .issue-parent,
+        .issue-list {
+            display: none;
+            position: relative;
+            z-index: 9;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #999;
+            margin-top: 12px;
+            padding-bottom: 2px;
+        }
+
+        .issue-list {
+            padding-bottom: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .issue-parent h3,
+        .issue-list h3 {
+            margin-top: 0;
+        }
+
+        .issue-parent button,
+        .issue-list button {
+            margin-right: 10px;
+        }
+
+        .issue-list button {
+            margin-top: 10px;
+        }
+
+        .overlay-new .issue-parent {
+            display: block;
+        }
+
+        .overlay-list .issue-list {
+            display: block;
+        }
+
+        .count span {
+            display: inline-block;
+            padding: 0 4px;
+            background: #048e2f;
+            color: #fff;
+            margin-left: 7px;
+        }
+
+        /* Absolute Center Spinner */
+
+        .loading {
+            position: fixed;
+            z-index: 999;
+            height: 2em;
+            width: 2em;
+            overflow: show;
+            margin: auto;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            display: none;
+        }
+
+        /* Transparent Overlay */
+
+        .loading:before {
+            content: '';
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        /* :not(:required) hides these rules from IE9 and below */
+
+        .loading:not(:required) {
+            /* hide "loading..." text */
+            font: 0/0 a;
+            color: transparent;
+            text-shadow: none;
+            background-color: transparent;
+            border: 0;
+        }
+
+        .loading:not(:required):after {
+            content: '';
+            display: block;
+            font-size: 10px;
+            width: 1em;
+            height: 1em;
+            margin-top: -0.5em;
+            -webkit-animation: spinner 1500ms infinite linear;
+            -moz-animation: spinner 1500ms infinite linear;
+            -ms-animation: spinner 1500ms infinite linear;
+            -o-animation: spinner 1500ms infinite linear;
+            animation: spinner 1500ms infinite linear;
+            border-radius: 0.5em;
+            -webkit-box-shadow: rgba(0, 0, 0, 0.75) 1.5em 0 0 0, rgba(0, 0, 0, 0.75) 1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) 0 1.5em 0 0, rgba(0, 0, 0, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.5) -1.5em 0 0 0, rgba(0, 0, 0, 0.5) -1.1em -1.1em 0 0, rgba(0, 0, 0, 0.75) 0 -1.5em 0 0, rgba(0, 0, 0, 0.75) 1.1em -1.1em 0 0;
+            box-shadow: rgba(0, 0, 0, 0.75) 1.5em 0 0 0, rgba(0, 0, 0, 0.75) 1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) 0 1.5em 0 0, rgba(0, 0, 0, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) -1.5em 0 0 0, rgba(0, 0, 0, 0.75) -1.1em -1.1em 0 0, rgba(0, 0, 0, 0.75) 0 -1.5em 0 0, rgba(0, 0, 0, 0.75) 1.1em -1.1em 0 0;
+        }
+
+        /* Animation */
+
+        @-webkit-keyframes spinner {
+            0% {
+                -webkit-transform: rotate(0deg);
+                -moz-transform: rotate(0deg);
+                -ms-transform: rotate(0deg);
+                -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                -moz-transform: rotate(360deg);
+                -ms-transform: rotate(360deg);
+                -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @-moz-keyframes spinner {
+            0% {
+                -webkit-transform: rotate(0deg);
+                -moz-transform: rotate(0deg);
+                -ms-transform: rotate(0deg);
+                -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                -moz-transform: rotate(360deg);
+                -ms-transform: rotate(360deg);
+                -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @-o-keyframes spinner {
+            0% {
+                -webkit-transform: rotate(0deg);
+                -moz-transform: rotate(0deg);
+                -ms-transform: rotate(0deg);
+                -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                -moz-transform: rotate(360deg);
+                -ms-transform: rotate(360deg);
+                -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spinner {
+            0% {
+                -webkit-transform: rotate(0deg);
+                -moz-transform: rotate(0deg);
+                -ms-transform: rotate(0deg);
+                -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                -moz-transform: rotate(360deg);
+                -ms-transform: rotate(360deg);
+                -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="loading"></div>
+    <div class="container login">
+        <div class="row">
+            <!-- Default form login -->
+            <form class="form-signin">
+                <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+                <label for="inputEmail" class="sr-only">Email address</label>
+                <input type="text" id="inputUserName" class="form-control" placeholder="GitHub UserName" required="" autofocus="">
+                <button class="btn btn-lg btn-primary btn-block signin" type="submit">Sign in</button>
+            </form>
+            <!-- Default form login -->
+            <!-- Category -->
+            <div class="single category">
+                <h3 class="side-title">Repositories of
+                    <span id="repoUser"></span>
+                </h3>
+                <div class="list-group">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function loadRepo(data) {
+            var repoHtml = '<div>';
+            $('.container').removeClass('login');
+            $.each(data, function (key, val) {
+                repoHtml +=
+                    '<section class="list-group-item list-group-item-action flex-column align-items-start">' +
+                    '<div class="d-flex w-100 justify-content-between">' +
+                    '<h1 class="mb-1">' + data[key].name + '</h1>' +
+                    '<small><b>Upadted on </b>' + data[key].updated_at + '</small>' +
+                    '</div>' +
+                    '<p class="mb-1"><b>Owner: </b>' + data[key].owner.login + '</p>' +
+                    '<small><b>Open Issue: </b><span class="count">' + data[key].open_issues_count +
+                    '</span></small>' +
+                    '<div data-user="' + data[key].owner.login + '" data-repo="' + data[key].name +
+                    '"class="links">' +
+                    '<a class="view-issue ' + ((data[key].open_issues_count > 0) ? +'' : 'hide') +
+                    ' btn btn-primary">View Issue </a>' +
+                    '<a class="new-issue btn btn-primary">New Issue </a>' +
+                    '</div>' +
+                    '<div class="issue-list"></div>' +
+                    '<div class="issue-parent">' +
+                    '<h3>Add New Issue</h3>' +
+                    '<form>' +
+                    '<div class="form-group">' +
+                    '<label for="issueTitle_' + data[key].name + '">Issue Title</label>' +
+                    '<input type="text" class="form-control" id="issueTitle_' + data[key].name +
+                    '" placeholder="Enter issue title">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label for="issueDesc_' + data[key].name + '">Issue Description</label>' +
+                    '<textarea class="form-control" id="issueDesc_' + data[key].name +
+                    '" placeholder="Enter issue description"></textarea>' +
+                    '</div>' +
+                    '<button type="submit" class="issue-submit btn btn-primary">Submit</button>' +
+                    '<button type="reset" class="issue-cancel btn btn-primary">Cancel</button>' +
+                    '</form>' +
+                    '</div>' +
+                    '</section>';
+            });
+            repoHtml += '</div>';
+
+            $('.list-group').append(repoHtml);
+            bindRepoEvents();
+        }
+
+        function loadIssues(data, event) {
+            var resultHtml = '<div class="details"><h3>Issue List</h3>',
+                btn = $(event.target);
+
+            $('.list-group-item').removeClass('overlay-active').removeClass('overlay-new').removeClass('overlay-list');
+            btn.parents('.list-group-item').addClass('overlay-active').addClass('overlay-list');
+            btn.parents('.list-group-item').find('.cancel-issue').on('click', function () {
+                $('.list-group-item').removeClass('overlay-active').removeClass('overlay-list');
+            });
+
+            $('html, body').animate({
+                scrollTop: btn.offset().top
+            }, 200);
+
+            if (data && data.length) {
+                $.each(data, function (key, val) {
+                    resultHtml += '<div class="list-group-item"><h4><span>Issue Title:</span> ' + data[key].title +
+                        '</h4><div class="issue-description"><span>Issue Description:</span> ' + data[key].body +
+                        '</div></div>';
+                });
+                resultHtml +=
+                    '<div class="backBtn"><button type="button" class="btn btn-primary hide-issue">Back</button></div></div>';
+                $('.issue-list').html(resultHtml);
+                bindIssuevents();
+            } else {
+                $('.issue-list').html('No issue available');
+            }
+        }
+
+        function bindIssuevents() {
+            $('.list-group').find('.hide-issue').on('click', function () {
+                $('.list-group-item').removeClass('overlay-active').removeClass('overlay-list');
+            });
+        }
+
+        function bindRepoEvents() {
+            $('.list-group').find('.new-issue').on('click', function (event) {
+                $('.list-group-item').removeClass('overlay-active').removeClass('overlay-new').removeClass(
+                    'overlay-list');
+                $(this).parents('.list-group-item').addClass('overlay-active').addClass('overlay-new');
+
+                $('html, body').animate({
+                    scrollTop: $(this).offset().top
+                }, 200);
+            });
+            $('.list-group').find('.issue-cancel').on('click', function () {
+                $('html, body').animate({
+                    scrollTop: $(this).parents('.list-group-item').offset().top
+                }, 200);
+                $('.list-group-item').removeClass('overlay-active').removeClass('overlay-new');
+            });
+
+            $(".view-issue").click(function (event) {
+                event.preventDefault();
+                var user = $(this).parent('.links').data('user'),
+                    repo = $(this).parent('.links').data('repo');
+                viewIssues(user, repo, event);
+            });
+
+            $(".issue-submit").click(function (event) {
+                event.preventDefault();
+                var user = $(this).parents('.list-group-item').find('.links').data('user'),
+                    repo = $(this).parents('.list-group-item').find('.links').data('repo'),
+                    title = $(this).parents('.list-group-item').find('input[type=text]').val(),
+                    description = $(this).parents('.list-group-item').find('textarea').val(),
+                    data = JSON.stringify({
+                        "title": title,
+                        "body": description
+                    }),
+                    url = 'https://api.github.com/repos/' + user + '/' + repo + '/issues';
+                ajaxCall(url, issueSubmited, event, 'POST', data);
+            });
+        }
+
+        function issueSubmited(data, event) {
+            var btnParent = $(event.target).parents('.list-group-item');
+
+            $('html, body').animate({
+                scrollTop: btnParent.offset().top
+            }, 200);
+
+            $('.list-group-item').removeClass('overlay-active').removeClass('overlay-new');
+
+            if (data) {
+                var newCount = parseInt(btnParent.find('.count').html()) + 1;
+                btnParent.find('.count').html(newCount + '<span>Issue added</span>');
+            }
+        }
+
+        function viewIssues(user, repo, event) {
+            var url = 'https://api.github.com/repos/' + user + '/' + repo + '/issues';
+            ajaxCall(url, loadIssues, event);
+        }
+
+        $(document).ready(function () {
+            var username = sessionStorage.getItem('user');
+            if (username) {
+                $('#repoUser').html(username);
+                url = 'https://api.github.com/users/' + username + '/repos';
+                ajaxCall(url, loadRepo);
+            }
+        });
+
+        $(".signin").click(function (event) {
+            event.preventDefault();
+
+            var username = $('#inputUserName').val(),
+                url;
+
+            sessionStorage.setItem('user', username);
+
+            $('#repoUser').html(username);
+
+            if (username) {
+                url = 'https://api.github.com/users/' + username + '/repos';
+                ajaxCall(url, loadRepo);
+            }
+        });
+
+        function ajaxCall(url, callback, event, method, data) {
+            $('.loading').show();
+            $.ajax({
+                type: method ? method : 'GET',
+                url: url,
+                data: data,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "token 84318dc6821670d7b93abe99910871a11f3e5667");
+                }
+            }).done(function (data) {
+                $('.loading').hide();
+                callback(data, event);
+            }).fail(function (data) {
+                $('.loading').hide();
+                alert('Error - ' + (data.responseJSON ? data.responseJSON.message : 'unknown'));
+            });
+        }
+    </script>
+</body>
+
+</html>
