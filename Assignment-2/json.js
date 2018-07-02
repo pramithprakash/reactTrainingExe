@@ -19,55 +19,44 @@ eslint no-console: "error"
 
 
 const fs = require('fs');
-const { StringDecoder } = require('string_decoder');
 
-const decoder = new StringDecoder('utf8');
-const stream = fs.createReadStream('chicagocrimes-1');
+let count = 0;
+const e = [];
+let k;
 
-let data = '';
+const readline = require('readline');
 
-function onReadable() {
-  let chunk; 
-  while ((chunk = stream.read()) !== null) {
-    const str = decoder.write(chunk);
-    data += str;
-  }
-  JSONConversion(data);
-}
-
-stream.on('readable', () => {
-  onReadable();
+const stream = readline.createInterface({
+  input: fs.createReadStream('chicagocrimes-1.csv'),
 });
 
+stream.on('line', (line) => {
+  JSONConversion(line);
+});
 
-// const fs = require('fs');
-// fs.readFile('chicagocrimes-1', 'utf-8', (err, data) => {
-//   if (err) {
-//     console.log(`ERROR : ${err}`);
-//   } else {
-//     console.log(JSONConversion(data));
-//   }
-// });
+stream.on('close', () => save());
 
-function JSONConversion(cvsText) {
-  const b = cvsText.split('\n');
-  let c;
-  let k;
-  const e = [];
+function JSONConversion(line) {
 
-  for (let i = 1; i < b.length; i++) {
-    k = b[0].split(',');
-    c = b[i].split(',');
+  if (count === 0) {
+    k = line.split(',');
+  } else {
+    const c = line.split(',');
     const d = {};
     for (let j = 0; j < c.length; j++) {
-      const key = k[j];
+      const key = k[j] ? k[j].replace(' ', '_') : '';
       d[key] = c[j];
     }
     e.push(d);
   }
 
+  count += 1;
+}
+
+function save() {
   fs.writeFile('cvsasjson.json', JSON.stringify(e), (err) => {
     if (err) throw err;
     console.log('Saved!');
   });
 }
+
