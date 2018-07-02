@@ -64,7 +64,7 @@
         </div>
     </section>
     <script type="application/javascript">
-        function initZoom(method) {
+        const initZoom = method => {
             if (method === 'callback') { // USING CALLBACK
 
                 let ele = $('.callback'),
@@ -104,7 +104,7 @@
             }
         }
 
-        function zoomCallback(ele, callback) {
+        const zoomCallback = (ele, callback) => {
             ele.addClass('zoom');
 
             setTimeout(function(){
@@ -112,7 +112,8 @@
             },800);
         }
 
-        function zoomPromise(ele) {
+
+        const zoomPromise = ele => {
             return new Promise(function(resolve, reject){
                 ele.addClass('zoom');
 
