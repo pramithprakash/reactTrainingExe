@@ -104,6 +104,7 @@
             }
         }
 
+
         const zoomCallback = (ele, callback) => {
             ele.addClass('zoom');
 
@@ -111,7 +112,6 @@
                 callback();
             },800);
         }
-
 
         const zoomPromise = ele => {
             return new Promise(function(resolve, reject){
