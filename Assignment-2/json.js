@@ -19,44 +19,64 @@ eslint no-console: "error"
 
 
 const fs = require('fs');
-
-let count = 0;
-const e = [];
-let k;
-
 const readline = require('readline');
 
+let isHeader = true;
+let year, primaryType, description, header;
+let jsonData = {};
+
+
 const stream = readline.createInterface({
-  input: fs.createReadStream('chicagocrimes-1.csv'),
+  input: fs.createReadStream('chicagocrimes.csv'),
 });
 
 stream.on('line', (line) => {
   JSONConversion(line);
 });
 
-stream.on('close', () => save());
+stream.on('close', () => saveJson());
 
 function JSONConversion(line) {
 
-  if (count === 0) {
-    k = line.split(',');
+  if (isHeader) {
+    header = line.split(',');
+    year = header.indexOf('Year');
+    primaryType = header.indexOf('Primary Type');
+    description = header.indexOf('Description');
+    isHeader = false;
   } else {
-    const c = line.split(',');
-    const d = {};
-    for (let j = 0; j < c.length; j++) {
-      const key = k[j] ? k[j].replace(' ', '_') : '';
-      d[key] = c[j];
+    const row = line.split(',');
+    let obj = {};
+    if (row[primaryType] === 'THEFT' &&
+       (row[year] >= 2001 && row[year] <= 2018)) {
+      if (row[description] === 'OVER $500') {
+        if (jsonData[row[year]]) {
+          jsonData[row[year]].theftOver500++;
+        } else {
+          obj.theftOver500 = 1;
+          obj.theftUnder500 = 0;
+          jsonData[row[year]] = obj;
+        }
+        
+      } else if (row[description] === '$500 AND UNDER') {
+        if (jsonData[row[year]]) {
+          jsonData[row[year]].theftUnder500++;
+        } else {
+          obj.theftOver500 = 0;
+          obj.theftUnder500 = 1;
+          jsonData[row[year]] = obj;
+        }
+        
+      }
     }
-    e.push(d);
   }
-
-  count += 1;
 }
 
-function save() {
-  fs.writeFile('cvsasjson.json', JSON.stringify(e), (err) => {
+
+function saveJson() {
+  fs.writeFile('theft.json', JSON.stringify(jsonData), (err) => {
     if (err) throw err;
-    console.log('Saved!');
+    console.log('File Saved!');
   });
 }
 
