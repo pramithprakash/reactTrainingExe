@@ -72,9 +72,11 @@ function JSONConversion(line) {
   }
 }
 
+
 function saveJson() {
   fs.writeFile('theft.json', JSON.stringify(jsonData), (err) => {
     if (err) throw err;
     console.log('File Saved!');
   });
 }
+
