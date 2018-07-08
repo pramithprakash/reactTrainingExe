@@ -22,8 +22,9 @@ const fs = require('fs');
 const readline = require('readline');
 
 let isHeader = true;
-let year, primaryType, description, header;
+let year, primaryType, description, header, arrest;
 let jsonData = {};
+let jsonAssaultData = {};
 
 
 const stream = readline.createInterface({
@@ -43,10 +44,12 @@ function JSONConversion(line) {
     year = header.indexOf('Year');
     primaryType = header.indexOf('Primary Type');
     description = header.indexOf('Description');
+    arrest = header.indexOf('Arrest');
     isHeader = false;
   } else {
     const row = line.split(',');
     let obj = {};
+    let objArrest = {};
     if (row[primaryType] === 'THEFT' &&
        (row[year] >= 2001 && row[year] <= 2018)) {
       if (row[description] === 'OVER $500') {
@@ -69,12 +72,38 @@ function JSONConversion(line) {
         
       }
     }
+    if (row[primaryType] === 'ASSAULT' &&
+       (row[year] >= 2001 && row[year] <= 2018)) {
+      if (row[arrest]==='true') {
+        if (jsonAssaultData[row[year]]) {
+          jsonAssaultData[row[year]].arrested++;
+        } else {
+          objArrest.arrested = 1;
+          objArrest.escaped = 0;
+          jsonAssaultData[row[year]] = objArrest;
+        }
+        
+      } else {
+        if (jsonAssaultData[row[year]]) {
+          jsonAssaultData[row[year]].escaped++;
+        } else {
+          objArrest.escaped = 1;
+          objArrest.arrested = 0;
+          jsonAssaultData[row[year]] = objArrest;
+        }
+        
+      }
+    }
   }
 }
 
 
 function saveJson() {
   fs.writeFile('theft.json', JSON.stringify(jsonData), (err) => {
+    if (err) throw err;
+    console.log('File Saved!');
+  });
+  fs.writeFile('assault.json', JSON.stringify(jsonAssaultData), (err) => {
     if (err) throw err;
     console.log('File Saved!');
   });
