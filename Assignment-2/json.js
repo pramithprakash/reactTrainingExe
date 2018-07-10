@@ -3,10 +3,12 @@ const readline = require('readline');
 
 let isHeader = true;
 let year, primaryType, description, header, arrest;
+
 let jsonAssaultData = {};
 let jsonData = {};
 // console.time('theft');
 // console.time('assault');
+
 const stream = readline.createInterface({
   input: fs.createReadStream('chicagocrimes.csv'),
 });
@@ -21,7 +23,6 @@ stream.on('line', (line) => {
     isHeader = false;
   } else {
     const row = line.split(',');
-
     if (row[primaryType] === 'THEFT' &&
        (row[year] >= 2001 && row[year] <= 2018)) {
       filterationTheft(row[primaryType], row[description], row[year]);
@@ -87,6 +88,10 @@ function saveJson(filename, data) {
     // console.timeEnd('theft');
     // console.timeEnd('assault');
     console.log('File ' + filename + ' Saved!');
+  });
+  fs.writeFile('assault.json', JSON.stringify(jsonAssaultData), (err) => {
+    if (err) throw err;
+    console.log('File Saved!');
   });
 }
 
