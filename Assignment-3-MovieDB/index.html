@@ -124,6 +124,18 @@
             display: block !important;
         }
 
+        .polularity {
+            width: 100px;
+            background: #eee;
+            height: 5px;
+            margin: 0 0 9px;
+            border: 1px solid #05e607;
+        }
+
+       .polularity div{
+            background: #05e607;
+            height: 3px;
+        }
         /* Transparent Overlay */
 
         #loading:before {
@@ -303,8 +315,7 @@
                     if (xhr.readyState == 4) {
                         if (xhr.status == 200) {
                             var data = JSON.parse(xhr.responseText);
-                            
-                            
+
                             if (data && data.results && data.results.length == 0) {
                                 self.noResults();
                             } else {
@@ -326,49 +337,35 @@
                 this.resultWrapper.append(h2);
 
                 for (let i = 0; i < data.results.length; i++) {
-                    let resultList = document.createElement("div"),
-                        poster = document.createElement("div"),
-                        info = document.createElement("div"),
-                        div = document.createElement("div"),
-                        title = document.createElement("h4"),
-                        span = document.createElement("span"),
-                        fav = document.createElement("a"),
-                        para = document.createElement("p"),
-                        popularityParent = document.createElement("div"),
-                        popularityChild = document.createElement("div"),
-                        posterImg = document.createElement("img");
+                    let resultList = document.createElement("div");
 
-                    resultList.classList.add("results");
-                    poster.classList.add("poster");
-                    posterImg.src = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2/' + data.results[i].poster_path;
-                    poster.appendChild(posterImg);
-                    span.innerHTML = data.results[i].release_date;
-                    poster.appendChild(fav);
-
-                    info.classList.add("info");
-                    fav.classList.add("fa", "fa-heart-o");
-                    span.innerHTML = data.results[i].release_date;
-                    title.innerHTML = data.results[i].title;
-                    para.innerHTML = data.results[i].overview;
-                    popularityParent.classList.add("polularity");
-                    popularityChild.style.width = data.results[i].vote_average * 10 + '%';
-                    popularityParent.appendChild(popularityChild);
-                    info.appendChild(popularityParent);
-                    info.appendChild(title);
-                    info.appendChild(span);
-                    info.appendChild(para);
-
-                    resultList.appendChild(poster);
-                    resultList.appendChild(info);
-
-                    fav.addEventListener('click', function(event) {
-                        fav.classList.toggle("fa-heart-o");
-                        fav.classList.toggle("fa-heart");
-                        //let ml = new MoviesList();
-                        //window.prompt("Create List","");
-                    });
+                    resultList.innerHTML = `
+                        <div class="results">
+                            <div class="poster">
+                                <img src="https://image.tmdb.org/t/p/w185_and_h278_bestv2/${data.results[i].poster_path}" />
+                                <a id="fav_${data.results[i].id}" class="fa fa-heart-o"></a>
+                            </div>
+                            <div class="info">
+                                <div class="polularity"><div style="width:${data.results[i].vote_average * 10 + '%'}"></div></div>
+                                <h4>${data.results[i].title}</h4>
+                                <span>${data.results[i].release_date}</span>
+                                <p>${data.results[i].overview}</p>
+                            </div>
+                        </div>
+                    `;
 
                     this.resultWrapper.appendChild(resultList);
+
+                    let fav = document.getElementById('fav_'+data.results[i].id);
+                    fav.addEventListener('click', function(event) {
+                        let evtTarget = event.target;
+                        let id = evtTarget.getAttribute('id');
+
+                        fav.classList.toggle("fa-heart-o");
+                        fav.classList.toggle("fa-heart");
+                        console.log(id);
+                        console.log(data);
+                    });
                 }
                 this.toggleLoader();
             }
