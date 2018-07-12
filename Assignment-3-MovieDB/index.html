@@ -9,11 +9,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Latest compiled and minified CSS -->
-    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
-            font-family: 'Raleway', sans-serif;
+            font-family: 'Varela Round', sans-serif;
             font-size: 1rem;
         }
         .container {
@@ -37,6 +38,10 @@
             clear: both;
         }
 
+        nav nav {
+            float: right;
+        }
+
         nav a{
             color: #fff !important;
         }
@@ -45,6 +50,7 @@
             padding-left: 15px;
             padding-right: 15px;
             padding-bottom: 7px;
+            width: 100%;
         }
 
         .form-control {
@@ -75,6 +81,15 @@
             line-height: 0;   
             overflow: hidden;
             width: 185px;
+            position: relative;
+        }
+        section.content .poster .fa{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 99;
+            color: #fff;
+            cursor: pointer;
         }
         section.content  div.info {
             width: calc(100% - 185px);
@@ -103,6 +118,10 @@
             bottom: 0;
             right: 0;
             display: none;
+        }
+
+        .show {
+            display: block !important;
         }
 
         /* Transparent Overlay */
@@ -224,10 +243,14 @@
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-            <a class="navbar-brand" href="#">My Movie DB</a>
+                <a class="navbar-brand" href="#">My Movie DB</a>
+
+                <nav class="nav">
+                    <a class="nav-link" href="#">Favorite list</a>
+                </nav>
             </div>
             <form onsubmit="event.preventDefault()">
-                <input class="form-control" type="text" placeholder="Search" id="search" aria-label="Search">
+                <input class="form-control" type="text" autocomplete="off" placeholder="Search" id="search" aria-label="Search">
             </form>
         </div>
     </nav>
@@ -246,8 +269,8 @@
                 this.resultWrapper = document.getElementById("results-wrapper");
             }
 
-            toggleLoader(value) {
-                this.loader.style.display = value;
+            toggleLoader() {
+                this.loader.classList.toggle("show");
             }
 
             toggleInputError(flag) {
@@ -260,10 +283,10 @@
 
             findMovies() {
                 let searchText = this.searchEle.value;
-                this.toggleLoader('block');
+                this.toggleLoader();
                 if (!searchText) {
                     this.toggleInputError(true);
-                    this.toggleLoader('none');
+                    this.toggleLoader();
                     return false;
                 }
                 this.toggleInputError();
@@ -323,6 +346,7 @@
                     poster.appendChild(fav);
 
                     info.classList.add("info");
+                    fav.classList.add("fa", "fa-heart-o");
                     span.innerHTML = data.results[i].release_date;
                     title.innerHTML = data.results[i].title;
                     para.innerHTML = data.results[i].overview;
@@ -338,14 +362,29 @@
                     resultList.appendChild(info);
 
                     fav.addEventListener('click', function(event) {
-                        alert('favorite');
+                        fav.classList.toggle("fa-heart-o");
+                        fav.classList.toggle("fa-heart");
+                        //let ml = new MoviesList();
+                        //window.prompt("Create List","");
                     });
 
                     this.resultWrapper.appendChild(resultList);
-                    this.toggleLoader('none');
                 }
+                this.toggleLoader();
+            }
+
+            noResults() {
+                let h2 = document.createElement("div");
+                this.resultWrapper.innerHTML = "";
+                h2.innerHTML = "Search > No Results found";
+                this.resultWrapper.append(h2);
+                this.toggleLoader();
             }
         }
+
+        // class MoviesList {
+
+        // }
 
         (function(){
             let form = document.getElementsByTagName('form')[0];
