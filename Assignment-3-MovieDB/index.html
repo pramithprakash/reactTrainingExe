@@ -381,13 +381,16 @@
                         });
 
                         let e = true;
+
                         if (self.favStorage.results.length > 0){
                             self.favStorage.results.map( item => {
+
                                 if (item.id == id){
                                     e = false;
                                 }
                             })
                             if (e) {
+
                                 self.favStorage.results.push(favObj);
                             } 
                         } else {
