@@ -124,7 +124,20 @@
         .show {
             display: block !important;
         }
-      
+
+        .polularity {
+            width: 100px;
+            background: #eee;
+            height: 5px;
+            margin: 0 0 9px;
+            border: 1px solid #05e607;
+        }
+
+       .polularity div{
+            background: #05e607;
+            height: 3px;
+        }
+
         /* Transparent Overlay */
 
         #loading:before {
@@ -247,7 +260,7 @@
                 <a class="navbar-brand" href="#">My Movie DB</a>
 
                 <nav class="nav">
-                    <a class="nav-link" href="#">Favorite list</a>
+                    <a class="nav-link" id="fav-link" href="#">Favorite list</a>
                 </nav>
             </div>
             <form onsubmit="event.preventDefault()">
@@ -268,6 +281,7 @@
                 this.loader = document.getElementById("loading");
                 this.searchEle = document.getElementById('search');
                 this.resultWrapper = document.getElementById("results-wrapper");
+                this.favStorage = [];
             }
           
             toggleLoader() {
@@ -304,8 +318,7 @@
                     if (xhr.readyState == 4) {
                         if (xhr.status == 200) {
                             var data = JSON.parse(xhr.responseText);
-                            
-                            
+
                             if (data && data.results && data.results.length == 0) {
                                 self.noResults();
                             } else {
@@ -322,56 +335,61 @@
 
             listMovies(data) {
                 let h2 = document.createElement("div");
+                let self = this;
                 h2.innerHTML = "Search > Movie Results";
                 this.resultWrapper.innerHTML = "";
                 this.resultWrapper.append(h2);
 
                 for (let i = 0; i < data.results.length; i++) {
-                    let resultList = document.createElement("div"),
-                        poster = document.createElement("div"),
-                        info = document.createElement("div"),
-                        div = document.createElement("div"),
-                        title = document.createElement("h4"),
-                        span = document.createElement("span"),
-                        fav = document.createElement("a"),
-                        para = document.createElement("p"),
-                        popularityParent = document.createElement("div"),
-                        popularityChild = document.createElement("div"),
-                        posterImg = document.createElement("img");
 
-                    resultList.classList.add("results");
-                    poster.classList.add("poster");
-                    posterImg.src = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2/' + data.results[i].poster_path;
-                    poster.appendChild(posterImg);
-                    span.innerHTML = data.results[i].release_date;
-                    poster.appendChild(fav);
+                    let resultList = document.createElement("div");
 
-                    info.classList.add("info");
-                    fav.classList.add("fa", "fa-heart-o");
+                    resultList.innerHTML = `
+                        <div class="results">
+                            <div class="poster">
+                                <img src="https://image.tmdb.org/t/p/w185_and_h278_bestv2/${data.results[i].poster_path}" />
+                                <a id="fav_${data.results[i].id}" class="fa fa-heart-o"></a>
+                            </div>
+                            <div class="info">
+                                <div class="polularity"><div style="width:${data.results[i].vote_average * 10 + '%'}"></div></div>
+                                <h4>${data.results[i].title}</h4>
+                                <span>${data.results[i].release_date}</span>
+                                <p>${data.results[i].overview}</p>
+                            </div>
+                        </div>
+                    `;
 
-                    span.innerHTML = data.results[i].release_date;
-                    title.innerHTML = data.results[i].title;
-                    para.innerHTML = data.results[i].overview;
-                    popularityParent.classList.add("polularity");
-                    popularityChild.style.width = data.results[i].vote_average * 10 + '%';
-                    popularityParent.appendChild(popularityChild);
-                    info.appendChild(popularityParent);
-                    info.appendChild(title);
-                    info.appendChild(span);
-                    info.appendChild(para);
+                    this.resultWrapper.appendChild(resultList);
 
-                    resultList.appendChild(poster);
-                    resultList.appendChild(info);
+                    let fav = document.getElementById('fav_'+data.results[i].id);
 
                     fav.addEventListener('click', function(event) {
 
-                        fav.classList.toggle("fa-heart-o");
-                        fav.classList.toggle("fa-heart");
-                        //let ml = new MoviesList();
-                        //window.prompt("Create List","");
-                    });
+                        let evtTarget = event.target;
+                        let id = evtTarget.getAttribute('id').substring(4, evtTarget.getAttribute('id').length);
 
-                    this.resultWrapper.appendChild(resultList);
+                        fav.classList.remove("fa-heart-o");
+                        fav.classList.add("fa-heart");
+
+                        var favObj = data.results.find(function (obj) { 
+                            return obj.id == id; 
+                        });
+
+                        let e = true;
+                        if (self.favStorage.length > 0){
+                            self.favStorage.map( item => {
+                                if (item.id == id){
+                                    e = false;
+                                }
+                            })
+                            if (e) {
+                                self.favStorage.push(favObj);
+                            } 
+                        } else {
+                            self.favStorage.push(favObj);
+                        }
+                        localStorage.setItem('favStorage', JSON.stringify({'results':self.favStorage}));
+                    });
                 }
                 this.toggleLoader();
             }
@@ -391,8 +409,15 @@
 
         (function(){
             let form = document.getElementsByTagName('form')[0];
+            let favLink = document.getElementById('fav-link');
 
             let m = new Movies();
+
+            favLink.addEventListener('click', function() {
+                let favData = localStorage.getItem('favStorage');
+                m.toggleLoader();
+                m.listMovies(JSON.parse(favData));
+            });
 
             form.addEventListener('submit', function() {
                 m.findMovies();
