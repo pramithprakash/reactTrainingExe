@@ -260,7 +260,7 @@
                 <a class="navbar-brand" href="#">My Movie DB</a>
 
                 <nav class="nav">
-                    <a class="nav-link" href="#">Favorite list</a>
+                    <a class="nav-link" id="fav-link" href="#">Favorite list</a>
                 </nav>
             </div>
             <form onsubmit="event.preventDefault()">
@@ -281,6 +281,7 @@
                 this.loader = document.getElementById("loading");
                 this.searchEle = document.getElementById('search');
                 this.resultWrapper = document.getElementById("results-wrapper");
+                this.favStorage = [];
             }
           
             toggleLoader() {
@@ -334,6 +335,7 @@
 
             listMovies(data) {
                 let h2 = document.createElement("div");
+                let self = this;
                 h2.innerHTML = "Search > Movie Results";
                 this.resultWrapper.innerHTML = "";
                 this.resultWrapper.append(h2);
@@ -364,12 +366,29 @@
                     fav.addEventListener('click', function(event) {
 
                         let evtTarget = event.target;
-                        let id = evtTarget.getAttribute('id');
+                        let id = evtTarget.getAttribute('id').substring(4, evtTarget.getAttribute('id').length);
 
-                        fav.classList.toggle("fa-heart-o");
-                        fav.classList.toggle("fa-heart");
-                        console.log(id);
-                        console.log(data);
+                        fav.classList.remove("fa-heart-o");
+                        fav.classList.add("fa-heart");
+
+                        var favObj = data.results.find(function (obj) { 
+                            return obj.id == id; 
+                        });
+
+                        let e = true;
+                        if (self.favStorage.length > 0){
+                            self.favStorage.map( item => {
+                                if (item.id == id){
+                                    e = false;
+                                }
+                            })
+                            if (e) {
+                                self.favStorage.push(favObj);
+                            } 
+                        } else {
+                            self.favStorage.push(favObj);
+                        }
+                        localStorage.setItem('favStorage', JSON.stringify({'results':self.favStorage}));
                     });
                 }
                 this.toggleLoader();
@@ -390,8 +409,15 @@
 
         (function(){
             let form = document.getElementsByTagName('form')[0];
+            let favLink = document.getElementById('fav-link');
 
             let m = new Movies();
+
+            favLink.addEventListener('click', function() {
+                let favData = localStorage.getItem('favStorage');
+                m.toggleLoader();
+                m.listMovies(JSON.parse(favData));
+            });
 
             form.addEventListener('submit', function() {
                 m.findMovies();
