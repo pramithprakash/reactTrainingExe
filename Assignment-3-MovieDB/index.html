@@ -281,7 +281,7 @@
                 this.loader = document.getElementById("loading");
                 this.searchEle = document.getElementById('search');
                 this.resultWrapper = document.getElementById("results-wrapper");
-                this.favStorage = [];
+                this.favStorage = localStorage.getItem('favStorage') ? JSON.parse(localStorage.getItem('favStorage')) : {results:[]};
             }
           
             toggleLoader() {
@@ -333,7 +333,7 @@
                 xhr.send();
             }
 
-            listMovies(data) {
+            listMovies(data, favTrue) {
                 let h2 = document.createElement("div");
                 let self = this;
                 h2.innerHTML = "Search > Movie Results";
@@ -354,7 +354,7 @@
                                 <div class="polularity"><div style="width:${data.results[i].vote_average * 10 + '%'}"></div></div>
                                 <h4>${data.results[i].title}</h4>
                                 <span>${data.results[i].release_date}</span>
-                                <p>${data.results[i].overview}</p>
+                                <p>${data.results[i].overview.substring(0,400)}...</p>
                             </div>
                         </div>
                     `;
@@ -362,6 +362,11 @@
                     this.resultWrapper.appendChild(resultList);
 
                     let fav = document.getElementById('fav_'+data.results[i].id);
+
+                    if (favTrue) {
+                        fav.classList.remove("fa-heart-o");
+                        fav.classList.add("fa-heart");
+                    }
 
                     fav.addEventListener('click', function(event) {
 
@@ -376,19 +381,22 @@
                         });
 
                         let e = true;
-                        if (self.favStorage.length > 0){
-                            self.favStorage.map( item => {
+
+                        if (self.favStorage.results.length > 0){
+                            self.favStorage.results.map( item => {
+
                                 if (item.id == id){
                                     e = false;
                                 }
                             })
                             if (e) {
-                                self.favStorage.push(favObj);
+
+                                self.favStorage.results.push(favObj);
                             } 
                         } else {
-                            self.favStorage.push(favObj);
+                            self.favStorage.results.push(favObj);
                         }
-                        localStorage.setItem('favStorage', JSON.stringify({'results':self.favStorage}));
+                        localStorage.setItem('favStorage', JSON.stringify(self.favStorage));
                     });
                 }
                 this.toggleLoader();
@@ -410,13 +418,18 @@
         (function(){
             let form = document.getElementsByTagName('form')[0];
             let favLink = document.getElementById('fav-link');
-
+            let favData = localStorage.getItem('favStorage');
             let m = new Movies();
+
+            if (favData) {
+                m.toggleLoader();
+                m.listMovies(JSON.parse(favData),true);
+            } 
 
             favLink.addEventListener('click', function() {
                 let favData = localStorage.getItem('favStorage');
                 m.toggleLoader();
-                m.listMovies(JSON.parse(favData));
+                m.listMovies(JSON.parse(favData), true);
             });
 
             form.addEventListener('submit', function() {
