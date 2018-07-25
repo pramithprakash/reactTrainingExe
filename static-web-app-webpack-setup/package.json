@@ -1,7 +1,6 @@
 {
   "name": "static-web-app",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,9 +8,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.10"
+  },
   "devDependencies": {
+    "webpack": "^4.16.2",
     "webpack-cli": "^3.1.0",
     "webpack-command": "^0.4.1"
-  }
+  },
+  "description": ""
 }
