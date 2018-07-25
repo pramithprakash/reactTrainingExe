@@ -1,0 +1,40 @@
+{
+  "name": "webpack_dev_setup1",
+  "version": "1.0.0",
+  "description": "webpackdevsetup",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node test.js",
+    "devBuild": "NODE_ENV=development webpack-dev-server --config webpack.dev.config.js",
+    "build": "NODE_ENV=production webpack-dev-server --config webpack.prod.config.js",
+    "serve": "webpack-dev-server"
+  },
+  "keywords": [
+    "webpack",
+    "npm",
+    "yarn",
+    "modules"
+  ],
+  "author": "raghu",
+  "license": "MIT",
+  "dependencies": {
+    "ramda": "^0.25.0",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "css-loader": "^1.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.4.1",
+    "mocha": "^5.2.0",
+    "style-loader": "^0.21.0",
+    "uglifyjs-webpack-plugin": "^1.2.7",
+    "webpack-merge": "^4.1.3"
+  }
+}
